@@ -1,37 +1,50 @@
 import torch.nn.functional as F
 import torch
-from tqdm import trange
-def sample_sequence(model, length, context, segments_tokens=None, num_samples=1, temperature=1, top_k=0, top_p=0.0, repetition_penalty=1.0,
+from tqdm import trange, tqdm
+def sample_sequence(vocab, model, length, context, segments_tokens=None, num_samples=1, temperature=1, top_k=0, top_p=0.0, repetition_penalty=1.0,
                     device='cpu', tokenizer=None):
+    taleindex=[]
+    with open(vocab,'r',encoding='cp949') as file:
+        taleindex=file.readlines()
+        taleindex = list(map(lambda s: s.strip(), taleindex))
+        taleindex = list(map(int, taleindex))
     context = tokenizer.encode(context)
     context = torch.tensor(context, dtype=torch.long, device=device)
     context = context.unsqueeze(0).repeat(num_samples, 1)
     generated = context
-
     with torch.no_grad():
-        for _ in trange(length):
+        with tqdm(total = length) as pbar:
+            ind = 0
+            cnt=0
+            skipped = 0
+            while(ind<=length):
+                inputs = {'input_ids': generated}
+                if segments_tokens != None:
+                    inputs['token_type_ids'] = torch.tensor(segments_tokens[:generated.shape[1]]).unsqueeze(0).repeat(num_samples, 1)
 
-            inputs = {'input_ids': generated}
-            if segments_tokens != None:
-              inputs['token_type_ids'] = torch.tensor(segments_tokens[:generated.shape[1]]).unsqueeze(0).repeat(num_samples, 1)
+                outputs = model(**inputs) # 참고: GPT-2/Transfo-XL/XLNet/CTRL(캐시된 숨겨진 상태)과 함께 '과거'를 사용할 수도 있음
+                next_token_logits = outputs[0][:, -1, :] / (temperature if temperature > 0 else 1.)
+                # CTRL의 반복 페널티(https://arxiv.org/abs/1909.05858)
+                for i in range(num_samples):
+                    for _ in set(generated[i].tolist()):
+                        next_token_logits[i, _] /= repetition_penalty
 
-
-            outputs = model(**inputs)  # 참고: GPT-2/Transfo-XL/XLNet/CTRL(캐시된 숨겨진 상태)과 함께 '과거'를 사용할 수도 있음
-            next_token_logits = outputs[0][:, -1, :] / (temperature if temperature > 0 else 1.)
-
-            # CTRL의 반복 페널티(https://arxiv.org/abs/1909.05858)
-            for i in range(num_samples):
-                for _ in set(generated[i].tolist()):
-                    next_token_logits[i, _] /= repetition_penalty
-                
-            filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=top_p)
-            if temperature == 0: # greedy sampling:
-                next_token = torch.argmax(filtered_logits, dim=-1).unsqueeze(-1)
-            else:
-                next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
-            generated = torch.cat((generated, next_token), dim=1)
+                filtered_logits = top_k_top_p_filtering(next_token_logits, top_k=top_k, top_p=top_p)
+                if temperature == 0: # greedy sampling:
+                    next_token = torch.argmax(filtered_logits, dim=-1).unsqueeze(-1)
+                else:
+                    next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
+                if int(next_token[0][0]) not in taleindex:
+                    skipped +=1
+                    cnt=cnt+1
+                    if(cnt>3): 
+                        cnt=0
+                    else: continue
+                generated = torch.cat((generated, next_token), dim=1)
+                pbar.update(1)
+                ind=ind+1
+    print(f"Word not in corpus => {skipped} skipped")        
     return generated
-
 
 
 

@@ -3,7 +3,11 @@ def cleaning(text):
     #따옴표 통일
     _filter = re.compile('[“]+')
     text = _filter.sub(' "', text)
+    _filter = re.compile('[\[]+')
+    text = _filter.sub(' "', text)
     _filter = re.compile('[”]+')
+    text = _filter.sub('" ', text)
+    _filter = re.compile('[\]]+')
     text = _filter.sub('" ', text)
     _filter = re.compile("[']+")
     text = _filter.sub("' ", text)
