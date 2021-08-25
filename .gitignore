@@ -134,3 +134,6 @@ data/정제/*.txt
 
 # model
 modelCheckpoint/*.tar
+
+# kobart
+kobart_summary
