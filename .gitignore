@@ -129,8 +129,8 @@ dmypy.json
 .pyre/
 
 # data
-data/*.txt
-data/정제/*.txt
+# data/*.txt
+# data/정제/*.txt
 
 # model
 modelCheckpoint/*.tar
