@@ -130,6 +130,7 @@ dmypy.json
 
 # data
 data/*.txt
+data/정제/*.txt
 
 # model
 modelCheckpoint/*.tar
