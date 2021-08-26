@@ -131,3 +131,6 @@ dmypy.json
 # model
 modelCheckpoint/*.tar
 
+# result
+data/결과
+
