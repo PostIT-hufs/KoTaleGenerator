@@ -6,11 +6,13 @@ from streamlit_lottie import st_lottie
 import requests
 from util.model import model_loading as load
 from PIL import Image
-image = Image.open('./data/이미지/palette.png')
 import time
+import os
 
 from util.generator import sample_sequence
 from util.similarity import similarity
+
+image = Image.open('./data/이미지/palette.png')
 
 size=400
 st.image(image,
@@ -40,7 +42,7 @@ def load_tokenizer():
     tokenizer.add_special_tokens(TOKENS_DICT)
     return tokenizer
 
-model,_ = load_model('./modelCheckpoint/talestart1280w.tar')
+model,_ = load_model('./modelCheckpoint/talestart1890w.tar')
 st.success("모델이 다운되었습니다.")
 tokenizer = load_tokenizer()
 st.success("준비가 끝났습니다.")
@@ -73,6 +75,8 @@ else:
         p3 = int(p3[:-1])
 
 basesavepath = './data/결과/'
+if not os.path.exists(basesavepath):
+    os.mkdir("./data/결과/")
 st.markdown("### **시작 Context**")
 context = st.text_input('아래 텍스트칸에 입력 후 Enter')
 lottie_url = "https://assets1.lottiefiles.com/packages/lf20_5puu9o0n.json"
