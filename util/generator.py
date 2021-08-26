@@ -36,13 +36,18 @@ def sample_sequence(vocab, model, length, context, segments_tokens=None, num_sam
                     next_token = torch.multinomial(F.softmax(filtered_logits, dim=-1), num_samples=1)
                 if int(next_token[0][0]) not in taleindex:
                     skipped +=1
-                    cnt=cnt+1
-                    if(cnt>3): 
+                    print("스킵된 token >> " ,tokenizer.decode(next_token[0][0]))
+
+                    if(cnt>3):
+                        print("그냥 넘어갑니다")
                         cnt=0
-                    else: continue
+                    else: 
+                        cnt=cnt+1
+                        continue
                 generated = torch.cat((generated, next_token), dim=1)
                 pbar.update(1)
                 ind=ind+1
+                cnt=0
     print(f"Word not in corpus => {skipped} skipped")        
     return generated
 
