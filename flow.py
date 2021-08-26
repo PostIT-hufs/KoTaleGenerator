@@ -42,7 +42,7 @@ def load_tokenizer():
     tokenizer.add_special_tokens(TOKENS_DICT)
     return tokenizer
 
-model,_ = load_model('./modelCheckpoint/talestart1890w.tar')
+model,_ = load_model('./model/tale_model.tar')
 st.success("모델이 다운되었습니다.")
 tokenizer = load_tokenizer()
 st.success("준비가 끝났습니다.")
