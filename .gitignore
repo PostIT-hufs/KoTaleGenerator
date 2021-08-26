@@ -129,8 +129,9 @@ dmypy.json
 .pyre/
 
 # model
-modelCheckpoint/*.tar
+model/
+modelCheckpoint/
 
 # result
-data/결과
+data/결과/
 
