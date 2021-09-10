@@ -1,5 +1,5 @@
 # KoTaleGenerator
-발표자료는 [Uploading kotalegenerator.pdf…](이 곳)에서 확인하실 수 있습니다.
+발표자료는 [이 곳](https://github.com/PostIT-hufs/KoTaleGenerator/files/7144203/kotalegenerator.pdf)에서 확인하실 수 있습니다.
 
 
 ## Download Model
