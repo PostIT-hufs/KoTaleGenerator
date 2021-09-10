@@ -1,0 +1,4 @@
+torch == 1.5.1
+transformers == 4.9.2
+streamlit == 0.87.0
+streamlit_lottie == 0.0.2
